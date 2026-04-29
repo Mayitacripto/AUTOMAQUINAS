@@ -1,0 +1,573 @@
+[Automaquinas_Dashboard (1).html](https://github.com/user-attachments/files/27214855/Automaquinas_Dashboard.1.html)
+# AUTOMAQUINAS<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>@Automaquinasvzla — Meta Ads Dashboard</title>
+<style>
+:root{
+  --dark:#0a0a0a;--lime:#d4f77a;--white:#ffffff;
+  --gray50:#f8fafc;--gray100:#f1f5f9;--gray200:#e2e8f0;
+  --gray400:#94a3b8;--gray600:#475569;--gray800:#1e293b;
+  --green:#3b6d11;--greenL:#eaf3de;
+  --red:#a32d2d;--redL:#fcebeb;
+  --amber:#ba7517;--amberL:#faeeda;
+  --blue:#185fa5;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f0f2f5;color:var(--gray800);min-height:100vh}
+.topbar{background:var(--dark);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.5)}
+.topbar-left{display:flex;align-items:center;gap:1rem}
+.topbar-brand{font-size:18px;font-weight:700;color:var(--lime)}
+.topbar-sub{font-size:12px;color:#666;border-left:1px solid #333;padding-left:1rem}
+.topbar-right{display:flex;align-items:center;gap:.75rem}
+.badge-period{background:#1a1a1a;border:1px solid #333;color:var(--lime);font-size:11px;padding:4px 12px;border-radius:20px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.6;transform:scale(.85)}}
+.container{max-width:1400px;margin:0 auto;padding:1.5rem 2rem}
+.section-title{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--gray400);font-weight:600;margin:1.5rem 0 .75rem;display:flex;align-items:center;gap:.5rem}
+.section-title::before{content:'';display:inline-block;width:14px;height:3px;background:var(--lime);border-radius:2px}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:1.5rem}
+.kpi-card{background:var(--white);border-radius:12px;padding:1.1rem 1.25rem;border:1px solid var(--gray200);transition:transform .15s,box-shadow .15s}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.08)}
+.kpi-card.dark{background:var(--dark);border-color:#222}
+.kpi-label{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--gray400);margin-bottom:6px;font-weight:500}
+.kpi-card.dark .kpi-label{color:#555}
+.kpi-value{font-size:26px;font-weight:700;line-height:1;color:var(--gray800)}
+.kpi-card.dark .kpi-value{color:var(--lime)}
+.kpi-sub{font-size:11px;color:var(--gray400);margin-top:4px}
+.kpi-card.dark .kpi-sub{color:#444}
+.kpi-delta{font-size:11px;font-weight:600;margin-top:6px;display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:20px}
+.kpi-delta.up{background:#dcfce7;color:#16a34a}
+.charts-2col{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.charts-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem}
+.chart-card{background:var(--white);border-radius:12px;border:1px solid var(--gray200);padding:1.25rem}
+.chart-header{font-size:13px;font-weight:600;color:var(--gray800);margin-bottom:.2rem}
+.chart-sub{font-size:11px;color:var(--gray400);margin-bottom:1rem}
+canvas{display:block}
+.table-card{background:var(--white);border-radius:12px;border:1px solid var(--gray200);overflow:hidden;margin-bottom:1rem}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{background:#f8fafc;padding:10px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--gray400);font-weight:600;border-bottom:1px solid var(--gray200)}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--gray100);color:var(--gray600);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#f8fafc}
+.tbl td.city{font-weight:600;color:var(--gray800)}
+.tbl td.bold{font-weight:700}
+.pill{display:inline-block;font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px}
+.pill.green{background:var(--greenL);color:var(--green)}
+.pill.red{background:var(--redL);color:var(--red)}
+.pill.amber{background:var(--amberL);color:var(--amber)}
+.topbot-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.topbot-card{border-radius:12px;overflow:hidden;border:1px solid var(--gray200)}
+.topbot-header{padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.topbot-header.green{background:var(--greenL);color:var(--green)}
+.topbot-header.red{background:var(--redL);color:var(--red)}
+.ad-item{display:flex;background:var(--white)}
+.ad-item+.ad-item{border-top:1px solid var(--gray100)}
+.ad-rank{width:44px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0}
+.ad-rank.g{background:var(--greenL);color:var(--green)}
+.ad-rank.r{background:var(--redL);color:var(--red)}
+.ad-body{padding:10px 12px;flex:1}
+.ad-name{font-size:12px;font-weight:600;color:var(--gray800);margin-bottom:2px}
+.ad-cpa{font-size:11px;font-weight:700;margin-bottom:4px}
+.ad-cpa.g{color:var(--green)}
+.ad-cpa.r{color:var(--red)}
+.ad-desc{font-size:11px;color:var(--gray400);line-height:1.4}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.compare-card{background:var(--white);border-radius:12px;border:2px solid var(--gray200);overflow:hidden}
+.compare-card.winner{border-color:var(--green)}
+.compare-top{padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase}
+.compare-top.g{background:var(--greenL);color:var(--green)}
+.compare-top.gray{background:var(--gray100);color:var(--gray600)}
+.compare-row{display:flex;justify-content:space-between;padding:8px 14px;border-bottom:1px solid var(--gray100);font-size:12px}
+.compare-row:last-child{border-bottom:none}
+.compare-row span:first-child{color:var(--gray400)}
+.compare-row span:last-child{font-weight:600;color:var(--gray800)}
+.rec-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1.5rem}
+.rec-item{display:flex;background:var(--white);border-radius:10px;border:1px solid var(--gray200);overflow:hidden}
+.rec-num{width:46px;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--white);flex-shrink:0}
+.rec-body{padding:12px 14px;flex:1}
+.rec-title{font-size:13px;font-weight:600;color:var(--gray800);margin-bottom:3px}
+.rec-desc{font-size:12px;color:var(--gray600);line-height:1.55}
+.footer{text-align:center;padding:1.5rem;color:var(--gray400);font-size:11px;margin-top:1rem}
+@media(max-width:900px){.charts-2col,.charts-3col,.topbot-grid,.compare-grid{grid-template-columns:1fr}.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.container{padding:1rem}.kpi-grid{grid-template-columns:1fr 1fr}.topbar-sub{display:none}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-brand">@Automaquinasvzla</div>
+    <div class="topbar-sub">Meta Ads Analytics &nbsp;&middot;&nbsp; Venuzia &amp; ZX Auto</div>
+  </div>
+  <div class="topbar-right">
+    <span class="badge-period">Mar 1 &ndash; Abr 21, 2026</span>
+    <div class="live-dot" title="Datos actualizados"></div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="section-title">M&#233;tricas Clave del Per&#237;odo</div>
+  <div class="kpi-grid">
+    <div class="kpi-card dark">
+      <div class="kpi-label">Inversi&#243;n Total</div>
+      <div class="kpi-value">$887</div>
+      <div class="kpi-sub">USD acumulado</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Resultados Totales</div>
+      <div class="kpi-value">28,436</div>
+      <div class="kpi-sub">visitas al perfil</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">CPA Global</div>
+      <div class="kpi-value" style="color:var(--green)">$0.031</div>
+      <div class="kpi-sub">costo por resultado</div>
+      <span class="kpi-delta up">&#8593; Muy eficiente</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Impresiones</div>
+      <div class="kpi-value">1.2M</div>
+      <div class="kpi-sub">alcance: 636K</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Conversaciones WA</div>
+      <div class="kpi-value">506</div>
+      <div class="kpi-sub">tasa proxy 1.8%</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Nuevos Seguidores</div>
+      <div class="kpi-value">4,166</div>
+      <div class="kpi-sub">Instagram</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">CTR Promedio</div>
+      <div class="kpi-value">2.44%</div>
+      <div class="kpi-sub">clics &#250;nicos en enlace</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">CPM Promedio</div>
+      <div class="kpi-value">$0.85</div>
+      <div class="kpi-sub">costo por 1,000 imp.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Rendimiento por Conjunto de Anuncios</div>
+  <div class="charts-2col">
+    <div class="chart-card">
+      <div class="chart-header">CPA por Conjunto</div>
+      <div class="chart-sub">Costo por resultado &mdash; menor es mejor</div>
+      <canvas id="cpaChart" height="220"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">Resultados vs Gasto</div>
+      <div class="chart-sub">Volumen de resultados e inversi&#243;n por conjunto</div>
+      <canvas id="resultsChart" height="220"></canvas>
+    </div>
+  </div>
+  <div class="charts-3col">
+    <div class="chart-card">
+      <div class="chart-header">CTR por Conjunto</div>
+      <div class="chart-sub">Porcentaje de clics &#250;nicos</div>
+      <canvas id="ctrChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">Conversaciones WA</div>
+      <div class="chart-sub">Distribuci&#243;n de contactos directos</div>
+      <canvas id="waChart" height="200"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="chart-header">Comparaci&#243;n Mensual</div>
+      <div class="chart-sub">CPA y CTR &mdash; Marzo vs Abril</div>
+      <canvas id="monthChart" height="200"></canvas>
+    </div>
+  </div>
+
+  <div class="section-title">Tabla de Rendimiento Detallada</div>
+  <div class="table-card">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>Conjunto de Anuncios</th>
+          <th>Resultados</th><th>Gasto USD</th><th>CPA</th>
+          <th>CTR %</th><th>CPM</th><th>Conv. WA</th><th>Seguidores</th><th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="city">ANZ - CCS</td><td>19,835</td><td>$508.69</td>
+          <td class="bold" style="color:var(--green)">$0.026</td>
+          <td>3.08%</td><td>$0.85</td><td>356</td><td>3,009</td>
+          <td><span class="pill green">TOP &#9733;</span></td>
+        </tr>
+        <tr>
+          <td class="city">Bol&#237;var - Monagas - Guarico</td><td>3,579</td><td>$126.07</td>
+          <td class="bold" style="color:var(--amber)">$0.035</td>
+          <td>2.35%</td><td>$0.93</td><td>91</td><td>673</td>
+          <td><span class="pill amber">MEDIA</span></td>
+        </tr>
+        <tr>
+          <td class="city">Sucre - Nva Esparta</td><td>2,586</td><td>$108.74</td>
+          <td class="bold" style="color:var(--amber)">$0.042</td>
+          <td>1.71%</td><td>$0.74</td><td>30</td><td>283</td>
+          <td><span class="pill amber">MEDIA</span></td>
+        </tr>
+        <tr>
+          <td class="city">Sucre</td><td>2,436</td><td>$143.84</td>
+          <td class="bold" style="color:var(--red)">$0.059</td>
+          <td>1.40%</td><td>$0.88</td><td>29</td><td>201</td>
+          <td><span class="pill red">BAJO &#9660;</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Top &amp; Bottom Anuncios</div>
+  <div class="topbot-grid">
+    <div class="topbot-card">
+      <div class="topbot-header green">Top 3 &mdash; Mayor Eficiencia</div>
+      <div class="ad-item">
+        <div class="ad-rank g">#1</div>
+        <div class="ad-body">
+          <div class="ad-name">AD #6 &middot; ANZ - CCS</div>
+          <div class="ad-cpa g">CPA $0.018</div>
+          <div class="ad-desc">2,007 resultados con $37. CPM $0.49 &mdash; el m&#225;s bajo del portafolio. CTR 2.77%. Audiencia CCS altamente receptiva.</div>
+        </div>
+      </div>
+      <div class="ad-item">
+        <div class="ad-rank g">#2</div>
+        <div class="ad-body">
+          <div class="ad-name">AD #7 &middot; ANZ - CCS</div>
+          <div class="ad-cpa g">CPA $0.023</div>
+          <div class="ad-desc">5,160 resultados &mdash; mayor volumen individual. $118 gastados con CTR 2.94%. El anuncio estrella del per&#237;odo.</div>
+        </div>
+      </div>
+      <div class="ad-item">
+        <div class="ad-rank g">#3</div>
+        <div class="ad-body">
+          <div class="ad-name">POST Compra Tu Carro 0KM &middot; ANZ-CCS</div>
+          <div class="ad-cpa g">CPA $0.024</div>
+          <div class="ad-desc">2,145 resultados. CTR 3.38% &mdash; el m&#225;s alto con inversi&#243;n relevante. Formato post est&#225;tico con alta respuesta.</div>
+        </div>
+      </div>
+    </div>
+    <div class="topbot-card">
+      <div class="topbot-header red">Bottom 3 &mdash; Menor Eficiencia</div>
+      <div class="ad-item">
+        <div class="ad-rank r">&#9660;1</div>
+        <div class="ad-body">
+          <div class="ad-name">AD #4 &middot; Sucre</div>
+          <div class="ad-cpa r">CPA $0.089</div>
+          <div class="ad-desc">Solo 109 resultados con $9.74. CTR 1.47%. CPA 3.4x el promedio global. Peor anuncio del portafolio.</div>
+        </div>
+      </div>
+      <div class="ad-item">
+        <div class="ad-rank r">&#9660;2</div>
+        <div class="ad-body">
+          <div class="ad-name">AD #2 &middot; Sucre</div>
+          <div class="ad-cpa r">CPA $0.066</div>
+          <div class="ad-desc">1,005 resultados pero CPA 2.5x el promedio. $66 gastados con 28 conversaciones WA &mdash; muy ineficiente.</div>
+        </div>
+      </div>
+      <div class="ad-item">
+        <div class="ad-rank r">&#9660;3</div>
+        <div class="ad-body">
+          <div class="ad-name">AD #1 &middot; Sucre</div>
+          <div class="ad-cpa r">CPA $0.066</div>
+          <div class="ad-desc">CTR 0.99% &mdash; el m&#225;s bajo del portafolio. Solo 1 conversaci&#243;n WA de 556 visitas. Desconexi&#243;n total con la audiencia.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-title">Comparaci&#243;n Mensual</div>
+  <div class="compare-grid">
+    <div class="compare-card winner">
+      <div class="compare-top g">Marzo 2026 &mdash; Per&#237;odo Completo &middot; GANADOR</div>
+      <div class="compare-row"><span>Gasto</span><span>$660.38</span></div>
+      <div class="compare-row"><span>Resultados</span><span>21,464</span></div>
+      <div class="compare-row"><span>CPA</span><span style="color:var(--green)">$0.0308</span></div>
+      <div class="compare-row"><span>CPM</span><span>$0.784</span></div>
+      <div class="compare-row"><span>CTR Promedio</span><span>2.28%</span></div>
+      <div class="compare-row"><span>Conversaciones WA</span><span>364</span></div>
+    </div>
+    <div class="compare-card">
+      <div class="compare-top gray">Abril 2026 &mdash; Per&#237;odo Parcial (21 d&#237;as)</div>
+      <div class="compare-row"><span>Gasto</span><span>$226.96</span></div>
+      <div class="compare-row"><span>Resultados</span><span>6,972</span></div>
+      <div class="compare-row"><span>CPA</span><span style="color:var(--amber)">$0.0326</span></div>
+      <div class="compare-row"><span>CPM</span><span>$0.947</span></div>
+      <div class="compare-row"><span>CTR Promedio</span><span style="color:var(--green)">2.67%</span></div>
+      <div class="compare-row"><span>Conversaciones WA</span><span>142</span></div>
+    </div>
+  </div>
+
+  <div class="section-title">Recomendaciones Accionables</div>
+  <div class="rec-list">
+    <div class="rec-item">
+      <div class="rec-num" style="background:#3b6d11">1</div>
+      <div class="rec-body">
+        <div class="rec-title">Consolidaci&#243;n de presupuesto en los conjuntos de mayor rendimiento</div>
+        <div class="rec-desc">Se concentr&#243; la inversi&#243;n en dos conjuntos de alto rendimiento: <strong>ANZ-CCS</strong> y <strong>Bol&#237;var-Monagas-Guarico</strong>. El conjunto Sucre fue pausado debido a su desempe&#241;o deficiente, con un CPA de $0.059 &mdash; 2.3x el promedio del portafolio &mdash; lo que hac&#237;a ineficiente continuar invirtiendo en esa segmentaci&#243;n.</div>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num" style="background:#185fa5">2</div>
+      <div class="rec-body">
+        <div class="rec-title">Activar campa&#241;as de Interacci&#243;n con Mensajes a WhatsApp</div>
+        <div class="rec-desc">Dado el buen desempe&#241;o registrado en la etapa TOFU del funnel, se recomienda activar campa&#241;as con objetivo <strong>Interacci&#243;n &mdash; Mensajes a WhatsApp</strong>, con el fin de llevar a los usuarios al siguiente nivel de contacto. Esta estrategia permite capitalizar el alcance generado y convertir audiencias ya impactadas en conversaciones de venta directa.</div>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num" style="background:#7c3aed">3</div>
+      <div class="rec-body">
+        <div class="rec-title">Escalar Reels de modelos espec&#237;ficos</div>
+        <div class="rec-desc">Producir 2&ndash;3 Reels/mes de modelos Venuzia/ZX Auto con precio, cuota y beneficio clave. Formato: 15&ndash;20 seg., vertical. El REEL Nissan Sylphy logr&#243; un CTR de 4.22% &mdash; el m&#225;s alto del portafolio.</div>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num" style="background:#0891b2">4</div>
+      <div class="rec-body">
+        <div class="rec-title">Optimizar el perfil de Instagram como punto de conversi&#243;n</div>
+        <div class="rec-desc">Incorporar el link de WhatsApp en la bio, crear Historias destacadas con el cat&#225;logo de precios y activar respuestas r&#225;pidas. El perfil debe estar preparado para convertir el tr&#225;fico recibido en contactos de venta.</div>
+      </div>
+    </div>
+    <div class="rec-item">
+      <div class="rec-num" style="background:#a32d2d">5</div>
+      <div class="rec-body">
+        <div class="rec-title">Activar retargeting de visitantes al perfil</div>
+        <div class="rec-desc">Crear una audiencia personalizada con los visitantes de los &#250;ltimos 30 d&#237;as y lanzar un anuncio de cierre con testimonial y precio destacado. Alto retorno con inversi&#243;n incremental m&#237;nima.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Reporte generado para <strong>@Automaquinasvzla</strong> &nbsp;&middot;&nbsp; Venuzia &amp; ZX Auto &nbsp;&middot;&nbsp; Per&#237;odo 1 Mar &ndash; 21 Abr 2026 &nbsp;&middot;&nbsp; Confidencial
+  </div>
+</div>
+
+<script>
+(function(){
+  var DPR = window.devicePixelRatio || 1;
+
+  function setup(id, h) {
+    var cv = document.getElementById(id);
+    if (!cv) return null;
+    var w = cv.parentElement.clientWidth || 480;
+    cv.width  = Math.round(w * DPR);
+    cv.height = Math.round(h * DPR);
+    cv.style.width  = w + 'px';
+    cv.style.height = h + 'px';
+    var ctx = cv.getContext('2d');
+    ctx.scale(DPR, DPR);
+    return { ctx: ctx, w: w, h: h };
+  }
+
+  function barChart(id, labels, values, colors, fmtY, yMax) {
+    var g = setup(id, 220); if (!g) return;
+    var ctx=g.ctx, W=g.w, H=g.h;
+    var pl=54,pr=14,pt=24,pb=42,cw=W-pl-pr,ch=H-pt-pb;
+    var mx=yMax||Math.max.apply(null,values)*1.22, n=labels.length, sw=cw/n;
+    ctx.strokeStyle='#f1f5f9'; ctx.lineWidth=1;
+    ctx.fillStyle='#94a3b8'; ctx.font='10px Segoe UI,sans-serif'; ctx.textAlign='right';
+    for(var i=0;i<=5;i++){
+      var gy=pt+ch*(1-i/5);
+      ctx.beginPath(); ctx.moveTo(pl,gy); ctx.lineTo(pl+cw,gy); ctx.stroke();
+      ctx.fillText(fmtY(mx*i/5),pl-5,gy+3.5);
+    }
+    var bw=sw*0.56;
+    for(var i=0;i<n;i++){
+      var bh=ch*(values[i]/mx),x=pl+sw*i+(sw-bw)/2,y=pt+ch-bh;
+      ctx.fillStyle=colors[i];
+      ctx.beginPath();
+      if(ctx.roundRect){ctx.roundRect(x,y,bw,bh,[4,4,0,0]);}else{ctx.rect(x,y,bw,bh);}
+      ctx.fill();
+      ctx.fillStyle='#1e293b'; ctx.font='bold 10px Segoe UI,sans-serif'; ctx.textAlign='center';
+      ctx.fillText(fmtY(values[i]),x+bw/2,y-5);
+      ctx.fillStyle='#94a3b8'; ctx.font='10px Segoe UI,sans-serif';
+      var lbl=labels[i]; if(lbl.length>11&&bw<72) lbl=lbl.slice(0,10)+'.';
+      ctx.fillText(lbl,pl+sw*i+sw/2,pt+ch+18);
+    }
+  }
+
+  function comboChart(id, labels, bars, line, bColors, lColor) {
+    var g = setup(id, 220); if (!g) return;
+    var ctx=g.ctx, W=g.w, H=g.h;
+    var pl=52,pr=56,pt=28,pb=42,cw=W-pl-pr,ch=H-pt-pb;
+    var mxB=Math.max.apply(null,bars)*1.28,mxL=Math.max.apply(null,line)*1.38;
+    var n=labels.length,sw=cw/n;
+    ctx.strokeStyle='#f1f5f9'; ctx.lineWidth=1;
+    ctx.font='10px Segoe UI,sans-serif';
+    for(var i=0;i<=4;i++){
+      var gy=pt+ch*(1-i/4);
+      ctx.beginPath(); ctx.moveTo(pl,gy); ctx.lineTo(pl+cw,gy); ctx.stroke();
+      ctx.fillStyle='#94a3b8'; ctx.textAlign='right';
+      ctx.fillText((mxB*i/4/1000).toFixed(1)+'K',pl-5,gy+3.5);
+      ctx.textAlign='left';
+      ctx.fillText('$'+(mxL*i/4).toFixed(0),pl+cw+4,gy+3.5);
+    }
+    var bw=sw*0.52;
+    for(var i=0;i<n;i++){
+      var bh=ch*(bars[i]/mxB),x=pl+sw*i+(sw-bw)/2,y=pt+ch-bh;
+      ctx.fillStyle=bColors[i];
+      ctx.beginPath();
+      if(ctx.roundRect){ctx.roundRect(x,y,bw,bh,[3,3,0,0]);}else{ctx.rect(x,y,bw,bh);}
+      ctx.fill();
+      ctx.fillStyle='#94a3b8'; ctx.font='10px Segoe UI,sans-serif'; ctx.textAlign='center';
+      var lbl=labels[i]; if(lbl.length>8) lbl=lbl.slice(0,8)+'.';
+      ctx.fillText(lbl,pl+sw*i+sw/2,pt+ch+18);
+    }
+    ctx.strokeStyle=lColor; ctx.lineWidth=2.5; ctx.beginPath();
+    for(var i=0;i<n;i++){
+      var lx=pl+sw*i+sw/2,ly=pt+ch-ch*(line[i]/mxL);
+      if(i===0) ctx.moveTo(lx,ly); else ctx.lineTo(lx,ly);
+    }
+    ctx.stroke();
+    for(var i=0;i<n;i++){
+      var lx=pl+sw*i+sw/2,ly=pt+ch-ch*(line[i]/mxL);
+      ctx.beginPath(); ctx.arc(lx,ly,4,0,2*Math.PI);
+      ctx.fillStyle='#fff'; ctx.fill();
+      ctx.strokeStyle=lColor; ctx.lineWidth=2; ctx.stroke();
+    }
+    ctx.fillStyle=bColors[0]; ctx.fillRect(pl,10,12,9);
+    ctx.fillStyle='#475569'; ctx.font='10px Segoe UI,sans-serif'; ctx.textAlign='left';
+    ctx.fillText('Resultados',pl+15,18);
+    ctx.strokeStyle=lColor; ctx.lineWidth=2;
+    ctx.beginPath(); ctx.moveTo(pl+92,14); ctx.lineTo(pl+104,14); ctx.stroke();
+    ctx.fillStyle='#475569'; ctx.fillText('Gasto USD',pl+108,18);
+  }
+
+  function hBarChart(id, labels, values, colors, fmtV) {
+    var g = setup(id, 200); if (!g) return;
+    var ctx=g.ctx, W=g.w, H=g.h;
+    var pl=92,pr=52,pt=10,pb=10,cw=W-pl-pr,ch=H-pt-pb;
+    var mx=Math.max.apply(null,values)*1.25,n=labels.length,rh=ch/n;
+    ctx.font='10.5px Segoe UI,sans-serif';
+    for(var i=0;i<n;i++){
+      var ry=pt+rh*i,bh=rh*0.5,yo=(rh-bh)/2,bw=cw*(values[i]/mx);
+      ctx.fillStyle='#f1f5f9';
+      if(ctx.roundRect){ctx.beginPath();ctx.roundRect(pl,ry+yo,cw,bh,3);ctx.fill();}
+      else{ctx.fillRect(pl,ry+yo,cw,bh);}
+      ctx.fillStyle=colors[i];
+      if(ctx.roundRect){ctx.beginPath();ctx.roundRect(pl,ry+yo,bw,bh,3);ctx.fill();}
+      else{ctx.fillRect(pl,ry+yo,bw,bh);}
+      ctx.fillStyle='#94a3b8'; ctx.textAlign='right';
+      ctx.fillText(labels[i],pl-7,ry+yo+bh/2+4);
+      ctx.fillStyle='#1e293b'; ctx.font='bold 10px Segoe UI,sans-serif'; ctx.textAlign='left';
+      ctx.fillText(fmtV(values[i]),pl+bw+5,ry+yo+bh/2+4);
+    }
+  }
+
+  function donut(id, labels, values, colors) {
+    var g = setup(id, 200); if (!g) return;
+    var ctx=g.ctx, W=g.w, H=g.h;
+    var cx=W*0.37,cy=H/2,R=Math.min(cx,cy)*0.82,r=R*0.56;
+    var tot=values.reduce(function(a,b){return a+b;},0),st=-Math.PI/2;
+    for(var i=0;i<values.length;i++){
+      var sw=(values[i]/tot)*2*Math.PI;
+      ctx.beginPath(); ctx.moveTo(cx,cy); ctx.arc(cx,cy,R,st,st+sw); ctx.closePath();
+      ctx.fillStyle=colors[i]; ctx.fill();
+      ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.stroke();
+      st+=sw;
+    }
+    ctx.beginPath(); ctx.arc(cx,cy,r,0,2*Math.PI);
+    ctx.fillStyle='#fff'; ctx.fill();
+    ctx.fillStyle='#1e293b'; ctx.textAlign='center'; ctx.font='bold 18px Segoe UI,sans-serif';
+    ctx.fillText(tot,cx,cy+5);
+    ctx.fillStyle='#94a3b8'; ctx.font='10px Segoe UI,sans-serif';
+    ctx.fillText('total',cx,cy+18);
+    var lx=W*0.72,ly=H/2-labels.length*11;
+    for(var i=0;i<labels.length;i++){
+      ctx.fillStyle=colors[i]; ctx.fillRect(lx,ly+i*22,10,10);
+      ctx.fillStyle='#475569'; ctx.font='11px Segoe UI,sans-serif'; ctx.textAlign='left';
+      ctx.fillText(labels[i]+' ('+values[i]+')',lx+14,ly+i*22+9);
+    }
+  }
+
+  function groupedBar(id, labels, s1, s2, c1, c2, f1, f2, l1, l2) {
+    var g = setup(id, 200); if (!g) return;
+    var ctx=g.ctx, W=g.w, H=g.h;
+    var pl=56,pr=16,pt=30,pb=42,cw=W-pl-pr,ch=H-pt-pb;
+    var mx1=Math.max.apply(null,s1)*1.3,mx2=Math.max.apply(null,s2)*1.4;
+    var n=labels.length,sw=cw/n,bw=sw*0.28;
+    ctx.strokeStyle='#f1f5f9'; ctx.lineWidth=1;
+    ctx.font='10px Segoe UI,sans-serif'; ctx.fillStyle='#94a3b8'; ctx.textAlign='right';
+    for(var i=0;i<=4;i++){
+      var gy=pt+ch*(1-i/4);
+      ctx.beginPath(); ctx.moveTo(pl,gy); ctx.lineTo(pl+cw,gy); ctx.stroke();
+      ctx.fillText(f1(mx1*i/4),pl-5,gy+3.5);
+    }
+    for(var i=0;i<n;i++){
+      var sx=pl+sw*i+sw*0.1;
+      var h1=ch*(s1[i]/mx1);
+      ctx.fillStyle=c1;
+      if(ctx.roundRect){ctx.beginPath();ctx.roundRect(sx,pt+ch-h1,bw,h1,[3,3,0,0]);ctx.fill();}
+      else{ctx.fillRect(sx,pt+ch-h1,bw,h1);}
+      ctx.fillStyle='#1e293b'; ctx.font='bold 9px Segoe UI,sans-serif'; ctx.textAlign='center';
+      ctx.fillText(f1(s1[i]),sx+bw/2,pt+ch-h1-5);
+      var h2=ch*(s2[i]/mx2);
+      ctx.fillStyle=c2;
+      if(ctx.roundRect){ctx.beginPath();ctx.roundRect(sx+bw+3,pt+ch-h2,bw,h2,[3,3,0,0]);ctx.fill();}
+      else{ctx.fillRect(sx+bw+3,pt+ch-h2,bw,h2);}
+      ctx.fillStyle='#1e293b';
+      ctx.fillText(f2(s2[i]),sx+bw+3+bw/2,pt+ch-h2-5);
+      ctx.fillStyle='#94a3b8'; ctx.font='10px Segoe UI,sans-serif'; ctx.textAlign='center';
+      ctx.fillText(labels[i],pl+sw*i+sw/2,pt+ch+18);
+    }
+    ctx.fillStyle=c1; ctx.fillRect(pl,10,12,9);
+    ctx.fillStyle='#475569'; ctx.font='10px Segoe UI,sans-serif'; ctx.textAlign='left';
+    ctx.fillText(l1,pl+15,19);
+    ctx.fillStyle=c2; ctx.fillRect(pl+58,10,12,9);
+    ctx.fillText(l2,pl+73,19);
+  }
+
+  function renderAll() {
+    barChart('cpaChart',
+      ['ANZ-CCS','Bol-Mon-Gco','Sucre-NE','Sucre'],
+      [0.026,0.035,0.042,0.059],
+      ['#3B6D11','#639922','#BA7517','#A32D2D'],
+      function(v){return '$'+v.toFixed(3);}, 0.072);
+
+    comboChart('resultsChart',
+      ['ANZ-CCS','Bol-Mon','Sucre-NE','Sucre'],
+      [19835,3579,2586,2436],
+      [508.69,126.07,108.74,143.84],
+      ['#185FA5','#378ADD','#60A5FA','#93C5FD'],'#BA7517');
+
+    hBarChart('ctrChart',
+      ['ANZ-CCS','Bol-Mon-Gco','Sucre-NE','Sucre'],
+      [3.08,2.35,1.71,1.40],
+      ['#0C447C','#185FA5','#378ADD','#93C5FD'],
+      function(v){return v.toFixed(2)+'%';});
+
+    donut('waChart',
+      ['ANZ-CCS','Bol-Mon','Sucre-NE','Sucre'],
+      [356,91,30,29],
+      ['#3B6D11','#639922','#BA7517','#A32D2D']);
+
+    groupedBar('monthChart',
+      ['Marzo','Abril'],
+      [0.0308,0.0326],[2.28,2.67],
+      '#185FA5','#3B6D11',
+      function(v){return '$'+v.toFixed(4);},
+      function(v){return v.toFixed(2)+'%';},
+      'CPA','CTR %');
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',renderAll);
+  } else {
+    renderAll();
+  }
+
+  var rt;
+  window.addEventListener('resize',function(){
+    clearTimeout(rt); rt=setTimeout(renderAll,150);
+  });
+})();
+</script>
+</body>
+</html>
